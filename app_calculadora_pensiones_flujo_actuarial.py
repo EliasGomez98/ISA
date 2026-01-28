@@ -1,13 +1,4 @@
-import streamlit as st
-
-user = getattr(st, "user", None)  # puede existir o no
-is_logged_in = getattr(user, "is_logged_in", False)  # si no existe, False
-
-if not is_logged_in:
-    st.info("Esta app es privada. Por favor inicia sesión.")
-    st.button("Iniciar sesión", on_click=st.login)  # si tienes auth configurado
-    st.stop()
-    
+import streamlit as st  
 import numpy as np
 import pandas as pd
 from datetime import datetime
