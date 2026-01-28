@@ -1,4 +1,13 @@
 import streamlit as st
+
+user = getattr(st, "user", None)  # puede existir o no
+is_logged_in = getattr(user, "is_logged_in", False)  # si no existe, False
+
+if not is_logged_in:
+    st.info("Esta app es privada. Por favor inicia sesión.")
+    st.button("Iniciar sesión", on_click=st.login)  # si tienes auth configurado
+    st.stop()
+    
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -189,3 +198,6 @@ df_progreso = pd.DataFrame({
 st.area_chart(df_progreso, color=["#06369d", "#64b5f6"])
 
 st.caption("Nota: Los cálculos incluyen probabilidades de supervivencia según Tablas SPP-2025.")
+
+# ... tu app normal aquí ...
+st.write(f"Bienvenido, {getattr(user, 'name', 'usuario')}!")
