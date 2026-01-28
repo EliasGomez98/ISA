@@ -3,6 +3,30 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
+# --- ACCESO RESTRINGIDO (Microsoft Entra OIDC + allowlist) ---
+ALLOWED_EMAILS = {
+    "egomez@sbs.gob.pe",
+    "abalarezo@sbs.gob.pe",
+    "kaguilar@sbs.gob.pe",
+    "lsanchez-Lagomarcino@sbs.gob.pe",
+    "cizaguirre@sbs.gob.pe"# normalizamos a minúsculas
+}
+
+if not st.user.is_logged_in:
+    st.set_page_config(page_title="CEIP: Capital semilla y aportes capitalizables", layout="wide")
+    st.title("Acceso restringido")
+    st.write("Inicia sesión con tu correo institucional autorizado.")
+    if st.button("Iniciar sesión"):
+        st.login()
+    st.stop()
+
+email = (getattr(st.user, "email", "") or "").strip().lower()
+
+if email not in ALLOWED_EMAILS:
+    st.error("Acceso denegado. Usuario no autorizado.")
+    st.logout()
+    st.stop()
+
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="CEIP: Capital semilla y aportes capitalizables", layout="wide")
 
