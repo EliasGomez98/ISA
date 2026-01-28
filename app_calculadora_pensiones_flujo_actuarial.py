@@ -189,6 +189,3 @@ df_progreso = pd.DataFrame({
 st.area_chart(df_progreso, color=["#06369d", "#64b5f6"])
 
 st.caption("Nota: Los cálculos incluyen probabilidades de supervivencia según Tablas SPP-2025.")
-
-# ... tu app normal aquí ...
-st.write(f"Bienvenido, {getattr(user, 'name', 'usuario')}!")
