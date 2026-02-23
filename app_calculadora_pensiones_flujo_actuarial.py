@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from io import StringIO
+import plotly.graph_objects as go
 # =========================================================
 # 1) INPUTS: FACTORES DE MEJORA
 # =========================================================
