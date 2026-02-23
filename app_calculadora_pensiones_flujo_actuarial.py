@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from io import StringIO
-import matplotlib.pyplot as plt
+
 # =========================================================
 # 1) INPUTS: FACTORES DE MEJORA
 # =========================================================
@@ -636,18 +636,26 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
         }))
     
     with col2a:
-        st.write("### Proyección de capital semilla y aportes mensuales capitalizables S/")
+        st.write("### Proyección de capital semilla y aportes (doble eje simulado)")
     
-        fig, ax1 = plt.subplots()
+        df_plot = df_vec.copy()
     
-        ax1.plot(df_vec["Año"], df_vec["Capital_semilla"])
-        ax1.set_ylabel("Capital semilla (S/)")
+        # Factor de escala automático
+        max_capital = df_plot["Capital Semilla"].max()
+        max_aporte = df_plot["Aporte Mensual"].max()
     
-        ax2 = ax1.twinx()
-        ax2.plot(df_vec["Año"], df_vec["Aportes_capitalizables"])
-        ax2.set_ylabel("Aportes capitalizables (S/)")
+        factor = max_capital / max_aporte if max_aporte != 0 else 1
     
-        st.pyplot(fig)
+        df_plot["Aporte Mensual (esc.)"] = df_plot["Aporte Mensual"] * factor
+    
+        df_plot = df_plot.set_index("Año")[[
+            "Capital Semilla",
+            "Aporte Mensual (esc.)"
+        ]]
+    
+        st.line_chart(df_plot)
+    
+        st.caption(f"*El Aporte Mensual fue escalado x{factor:,.2f} para visualización en segundo eje simulado.*")
 
     csv_bytes = df_vec.reset_index().to_csv(index=False).encode("utf-8-sig")
     st.download_button(
