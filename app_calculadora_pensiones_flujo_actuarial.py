@@ -641,24 +641,34 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
         }))
     
     with col2a:
-        st.write("### Proyección de capital semilla y aportes")
+        st.write("### Proyección de capital semilla y aportes mensuales (S/)")
     
-        base = alt.Chart(df_vec).encode(
-            x=alt.X("Proyección por cohortes de años de nacimiento:Q", title="Año")
+        # Resetear índice para usarlo en Altair
+        df_plot = df_vec.reset_index()
+    
+        base = alt.Chart(df_plot).encode(
+            x=alt.X(
+                "Proyección por cohortes de años de nacimiento:Q",
+                title="Cohortes de año de nacimiento"
+            )
         )
     
         line1 = base.mark_line(color="#06369D").encode(
-            y=alt.Y("Capital Semilla:Q",
-                    axis=alt.Axis(title="Capital Semilla (S/)", format=",.2f"))
+            y=alt.Y(
+                "Capital Semilla:Q",
+                axis=alt.Axis(title="Capital Semilla (S/)", format=",.2f")
+            )
         )
     
         line2 = base.mark_line(color="#D62728").encode(
-            y=alt.Y("Aporte Mensual:Q",
-                    axis=alt.Axis(title="Aporte Mensual (S/)", format=",.2f")),
+            y=alt.Y(
+                "Aporte Mensual:Q",
+                axis=alt.Axis(title="Aporte Mensual (S/)", format=",.2f")
+            )
         )
     
         chart = alt.layer(line1, line2).resolve_scale(
-            y='independent'
+            y="independent"
         )
     
         st.altair_chart(chart, use_container_width=True)
