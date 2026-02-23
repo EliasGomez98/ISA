@@ -574,6 +574,17 @@ st.area_chart(df_progreso, color=["#06369d", "#64b5f6"])
 # =========================================================
 # 9) RESULTADOS VECTORIALES
 # =========================================================
+
+try:
+    import plotly.graph_objects as go
+    PLOTLY_OK = True
+except ModuleNotFoundError:
+    PLOTLY_OK = False
+
+if not PLOTLY_OK:
+    st.error("Plotly no está instalado. Agrega 'plotly' en requirements.txt y reinicia la app.")
+    st.stop()
+
 with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", expanded=False):
     st.subheader("📊 Proyecciones: Capital Semilla y Aporte Mensual requeridos")
 
@@ -635,27 +646,49 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
             "Aporte Mensual": "S/ {:,.2f}"
         }))
     
+    import plotly.graph_objects as go
+    
     with col2a:
-        st.write("### Proyección de capital semilla y aportes (doble eje simulado)")
+        st.write("### Proyección de capital semilla y aportes mensuales capitalizables (S/)")
     
-        df_plot = df_vec.copy()
+        fig = go.Figure()
     
-        # Factor de escala automático
-        max_capital = df_plot["Capital Semilla"].max()
-        max_aporte = df_plot["Aporte Mensual"].max()
+        # Eje Y izquierdo: Capital Semilla
+        fig.add_trace(
+            go.Scatter(
+                x=df_vec["Año"],
+                y=df_vec["Capital Semilla"],
+                name="Capital Semilla",
+                mode="lines+markers"
+            )
+        )
     
-        factor = max_capital / max_aporte if max_aporte != 0 else 1
+        # Eje Y derecho: Aporte Mensual
+        fig.add_trace(
+            go.Scatter(
+                x=df_vec["Año"],
+                y=df_vec["Aporte Mensual"],
+                name="Aporte Mensual",
+                mode="lines+markers",
+                yaxis="y2"
+            )
+        )
     
-        df_plot["Aporte Mensual (esc.)"] = df_plot["Aporte Mensual"] * factor
+        fig.update_layout(
+            margin=dict(l=10, r=10, t=30, b=10),
+            xaxis=dict(title="Año"),
+            yaxis=dict(title="Capital Semilla (S/)", tickformat=",.2f"),
+            yaxis2=dict(
+                title="Aporte Mensual (S/)",
+                tickformat=",.2f",
+                overlaying="y",
+                side="right"
+            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+            hovermode="x unified"
+        )
     
-        df_plot = df_plot[[
-            "Capital Semilla",
-            "Aporte Mensual (esc.)"
-        ]]
-    
-        st.line_chart(df_plot)
-    
-        st.caption(f"*El Aporte Mensual fue escalado x{factor:,.2f} para visualización en segundo eje simulado.*")
+        st.plotly_chart(fig, use_container_width=True)
 
     csv_bytes = df_vec.reset_index().to_csv(index=False).encode("utf-8-sig")
     st.download_button(
