@@ -637,7 +637,42 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     
     with col2a:
         st.write("### Proyección de capital semilla y aportes mensuales capitalizables S/")
-        st.line_chart(df_vec)
+    
+        fig = go.Figure()
+    
+        # Eje Y izquierdo
+        fig.add_trace(
+            go.Scatter(
+                x=df_vec["Año"],
+                y=df_vec["Capital_semilla"],
+                name="Capital semilla",
+                mode="lines"
+            )
+        )
+    
+        # Eje Y derecho
+        fig.add_trace(
+            go.Scatter(
+                x=df_vec["Año"],
+                y=df_vec["Aportes_capitalizables"],
+                name="Aportes capitalizables",
+                mode="lines",
+                yaxis="y2"
+            )
+        )
+    
+        fig.update_layout(
+            xaxis=dict(title="Año"),
+            yaxis=dict(title="Capital semilla (S/)"),
+            yaxis2=dict(
+                title="Aportes capitalizables (S/)",
+                overlaying="y",
+                side="right"
+            ),
+            legend=dict(x=0.01, y=0.99)
+        )
+    
+        st.plotly_chart(fig, use_container_width=True)
 
     csv_bytes = df_vec.reset_index().to_csv(index=False).encode("utf-8-sig")
     st.download_button(
