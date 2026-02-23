@@ -639,7 +639,7 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
             "Capital Semilla": "S/ {:,.2f}",
             "Aporte Mensual": "S/ {:,.2f}"
         }))
-    
+
     with col2a:
         st.write("### Proyección (S/)")
     
@@ -654,7 +654,7 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     
         chart_capital = (
             alt.Chart(df_plot)
-            .mark_line(point=True)
+            .mark_line(strokeWidth=3)  # SOLO línea continua
             .encode(
                 x=alt.X(f"{x_col}:Q", title="Cohortes de año de nacimiento"),
                 y=alt.Y(
@@ -681,7 +681,7 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     
         chart_aporte = (
             alt.Chart(df_plot)
-            .mark_line(point=True)
+            .mark_line(strokeWidth=3)  # SOLO línea continua
             .encode(
                 x=alt.X(f"{x_col}:Q", title="Cohortes de año de nacimiento"),
                 y=alt.Y(
