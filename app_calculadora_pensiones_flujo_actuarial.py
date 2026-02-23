@@ -643,8 +643,27 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     with col2a:
         st.write("### Proyección de capital semilla y aportes mensuales (S/)")
     
-        # Resetear índice para usarlo en Altair
         df_plot = df_vec.reset_index()
+    
+        # ===== Capital Semilla =====
+        cap_min_real = df_plot["Capital Semilla"].min()
+        cap_max_real = df_plot["Capital Semilla"].max()
+    
+        cap_range = cap_max_real - cap_min_real if cap_max_real != cap_min_real else cap_max_real
+        cap_margin = cap_range * 0.08  # 8% margen visual
+    
+        cap_min = 0 if cap_min_real >= 0 else cap_min_real - cap_margin
+        cap_max = cap_max_real + cap_margin
+    
+        # ===== Aporte Mensual =====
+        ap_min_real = df_plot["Aporte Mensual"].min()
+        ap_max_real = df_plot["Aporte Mensual"].max()
+    
+        ap_range = ap_max_real - ap_min_real if ap_max_real != ap_min_real else ap_max_real
+        ap_margin = ap_range * 0.08
+    
+        ap_min = 0 if ap_min_real >= 0 else ap_min_real - ap_margin
+        ap_max = ap_max_real + ap_margin
     
         base = alt.Chart(df_plot).encode(
             x=alt.X(
@@ -653,17 +672,19 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
             )
         )
     
-        line1 = base.mark_line(color="#06369D").encode(
+        line1 = base.mark_line(color="#06369D", strokeWidth=3).encode(
             y=alt.Y(
                 "Capital Semilla:Q",
-                axis=alt.Axis(title="Capital Semilla (S/)", format=",.2f")
+                axis=alt.Axis(title="Capital Semilla (S/)", format=",.2f"),
+                scale=alt.Scale(domain=[cap_min, cap_max])
             )
         )
     
-        line2 = base.mark_line(color="#D62728").encode(
+        line2 = base.mark_line(color="#D62728", strokeWidth=3).encode(
             y=alt.Y(
                 "Aporte Mensual:Q",
-                axis=alt.Axis(title="Aporte Mensual (S/)", format=",.2f")
+                axis=alt.Axis(title="Aporte Mensual (S/)", format=",.2f"),
+                scale=alt.Scale(domain=[ap_min, ap_max])
             )
         )
     
