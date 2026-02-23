@@ -644,7 +644,7 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
         st.write("### Proyección de capital semilla y aportes")
     
         base = alt.Chart(df_vec).encode(
-            x=alt.X("Año:Q", title="Año")
+            x=alt.X("Proyección por cohortes de años de nacimiento:Q", title="Año")
         )
     
         line1 = base.mark_line(color="#06369D").encode(
