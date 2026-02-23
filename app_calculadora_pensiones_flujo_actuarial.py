@@ -641,71 +641,64 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
         }))
     
     with col2a:
-        st.write("### Proyección de capital semilla y aportes mensuales (S/)")
+        st.write("### Proyección (S/)")
     
         df_plot = df_vec.reset_index()
-    
         x_col = "Proyección por cohortes de años de nacimiento"
+    
+        # --------- 1) Capital Semilla ----------
         y1_col = "Capital Semilla"
+        y1_min = float(df_plot[y1_col].min())
+        y1_max = float(df_plot[y1_col].max())
+        y1_pad = (y1_max - y1_min) * 0.10 if y1_max != y1_min else max(1.0, y1_max * 0.05)
+    
+        chart_capital = (
+            alt.Chart(df_plot)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X(f"{x_col}:Q", title="Cohortes de año de nacimiento"),
+                y=alt.Y(
+                    f"{y1_col}:Q",
+                    title="Capital Semilla (S/)",
+                    scale=alt.Scale(domain=[y1_min - y1_pad, y1_max + y1_pad]),
+                    axis=alt.Axis(format=",.2f"),
+                ),
+                tooltip=[
+                    alt.Tooltip(f"{x_col}:Q", title="Cohorte", format=",.0f"),
+                    alt.Tooltip(f"{y1_col}:Q", title="Capital Semilla (S/)", format=",.2f"),
+                ],
+            )
+            .properties(height=260)
+        )
+    
+        st.altair_chart(chart_capital, use_container_width=True)
+    
+        # --------- 2) Aporte Mensual ----------
         y2_col = "Aporte Mensual"
+        y2_min = float(df_plot[y2_col].min())
+        y2_max = float(df_plot[y2_col].max())
+        y2_pad = (y2_max - y2_min) * 0.10 if y2_max != y2_min else max(0.5, y2_max * 0.05)
     
-        # ====== Ajustes "zoom" (puedes cambiarlos) ======
-        y1_min_target = 2500
-        y2_min_target = 20
-    
-        # ====== Máximos con margen ======
-        y1_max_real = float(df_plot[y1_col].max())
-        y2_max_real = float(df_plot[y2_col].max())
-    
-        y1_span = max(1.0, y1_max_real - y1_min_target)
-        y2_span = max(1.0, y2_max_real - y2_min_target)
-    
-        y1_max = y1_max_real + 0.15 * y1_span  # 15% margen arriba
-        y2_max = y2_max_real + 0.15 * y2_span
-    
-        # Si por algún motivo el target queda por encima del max real, evita dominio inválido
-        y1_min = min(y1_min_target, y1_max_real)
-        y2_min = min(y2_min_target, y2_max_real)
-    
-        # ====== Base con tooltip ======
-        base = alt.Chart(df_plot).encode(
-            x=alt.X(f"{x_col}:Q", title="Cohortes de año de nacimiento"),
-            tooltip=[
-                alt.Tooltip(f"{x_col}:Q", title="Cohorte", format=",.0f"),
-                alt.Tooltip(f"{y1_col}:Q", title="Capital Semilla (S/)", format=",.2f"),
-                alt.Tooltip(f"{y2_col}:Q", title="Aporte Mensual (S/)", format=",.2f"),
-            ],
-        )
-    
-        # Línea 1 (eje izquierdo)
-        line1 = base.mark_line(color="#06369D", strokeWidth=3).encode(
-            y=alt.Y(
-                f"{y1_col}:Q",
-                axis=alt.Axis(title="Capital Semilla (S/)", format=",.2f"),
-                scale=alt.Scale(domain=[y1_min, y1_max]),
+        chart_aporte = (
+            alt.Chart(df_plot)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X(f"{x_col}:Q", title="Cohortes de año de nacimiento"),
+                y=alt.Y(
+                    f"{y2_col}:Q",
+                    title="Aporte Mensual (S/)",
+                    scale=alt.Scale(domain=[y2_min - y2_pad, y2_max + y2_pad]),
+                    axis=alt.Axis(format=",.2f"),
+                ),
+                tooltip=[
+                    alt.Tooltip(f"{x_col}:Q", title="Cohorte", format=",.0f"),
+                    alt.Tooltip(f"{y2_col}:Q", title="Aporte Mensual (S/)", format=",.2f"),
+                ],
             )
+            .properties(height=260)
         )
     
-        pts1 = base.mark_point(color="#06369D", filled=True, size=45).encode(
-            y=alt.Y(f"{y1_col}:Q", scale=alt.Scale(domain=[y1_min, y1_max]))
-        )
-    
-        # Línea 2 (eje derecho)
-        line2 = base.mark_line(color="#D62728", strokeWidth=3).encode(
-            y=alt.Y(
-                f"{y2_col}:Q",
-                axis=alt.Axis(title="Aporte Mensual (S/)", format=",.2f"),
-                scale=alt.Scale(domain=[y2_min, y2_max]),
-            )
-        )
-    
-        pts2 = base.mark_point(color="#D62728", filled=True, size=45).encode(
-            y=alt.Y(f"{y2_col}:Q", scale=alt.Scale(domain=[y2_min, y2_max]))
-        )
-    
-        chart = alt.layer(line1, pts1, line2, pts2).resolve_scale(y="independent").interactive()
-    
-        st.altair_chart(chart, use_container_width=True)
+        st.altair_chart(chart_aporte, use_container_width=True)
 
     csv_bytes = df_vec.reset_index().to_csv(index=False).encode("utf-8-sig")
     st.download_button(
