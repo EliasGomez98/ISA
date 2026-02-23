@@ -648,7 +648,7 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     
         df_plot["Aporte Mensual (esc.)"] = df_plot["Aporte Mensual"] * factor
     
-        df_plot = df_plot.set_index("Año")[[
+        df_plot = df_plot.set_index("Proyección por cohortes de años de nacimiento")[[
             "Capital Semilla",
             "Aporte Mensual (esc.)"
         ]]
