@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from io import StringIO
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 # =========================================================
 # 1) INPUTS: FACTORES DE MEJORA
 # =========================================================
@@ -638,41 +638,16 @@ with st.expander("📌 Proyecciones por cohortes de nacimiento (2026-2126+)", ex
     with col2a:
         st.write("### Proyección de capital semilla y aportes mensuales capitalizables S/")
     
-        fig = go.Figure()
+        fig, ax1 = plt.subplots()
     
-        # Eje Y izquierdo
-        fig.add_trace(
-            go.Scatter(
-                x=df_vec["Año"],
-                y=df_vec["Capital_semilla"],
-                name="Capital semilla",
-                mode="lines"
-            )
-        )
+        ax1.plot(df_vec["Año"], df_vec["Capital_semilla"])
+        ax1.set_ylabel("Capital semilla (S/)")
     
-        # Eje Y derecho
-        fig.add_trace(
-            go.Scatter(
-                x=df_vec["Año"],
-                y=df_vec["Aportes_capitalizables"],
-                name="Aportes capitalizables",
-                mode="lines",
-                yaxis="y2"
-            )
-        )
+        ax2 = ax1.twinx()
+        ax2.plot(df_vec["Año"], df_vec["Aportes_capitalizables"])
+        ax2.set_ylabel("Aportes capitalizables (S/)")
     
-        fig.update_layout(
-            xaxis=dict(title="Año"),
-            yaxis=dict(title="Capital semilla (S/)"),
-            yaxis2=dict(
-                title="Aportes capitalizables (S/)",
-                overlaying="y",
-                side="right"
-            ),
-            legend=dict(x=0.01, y=0.99)
-        )
-    
-        st.plotly_chart(fig, use_container_width=True)
+        st.pyplot(fig)
 
     csv_bytes = df_vec.reset_index().to_csv(index=False).encode("utf-8-sig")
     st.download_button(
